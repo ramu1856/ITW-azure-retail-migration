@@ -1,0 +1,23 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'myContainerRegistry'
+    repository: 'itw-retail-app'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+
+- task: Kubernetes@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'MyAzureSub'
+    azureResourceGroup: 'itw-retail-rg'
+    kubernetesCluster: 'itw-aks-cluster'
+    namespace: 'default'
+    command: 'apply'
+    arguments: '-f kubernetes/deployment.yaml'
